@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.wms.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/obszarwktrymrzekaBugpyneaprzynajmniejraz_1.js"></script>
+        <script src="data/obszarwktrymrzekapyneazawsze_2.js"></script>
+        <script src="data/przebiegrzekiBugw1940roku_3.js"></script>
+        <script src="data/przebiegrzekiBugw1990roku_4.js"></script>
+        <script src="data/przebiegrzekiBugw2024roku_5.js"></script>
+        <script src="data/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6.js"></script>
+        <script src="data/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[52.391516737344375,20.917610098868586],[52.63270622597371,21.574369531125434]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_Ortofotomapa_0');
+        map.getPane('pane_Ortofotomapa_0').style.zIndex = 400;
+        var layer_Ortofotomapa_0 = L.WMS.layer("https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/StandardResolution", "Raster", {
+            pane: 'pane_Ortofotomapa_0',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_Ortofotomapa_0);
+        function pop_obszarwktrymrzekaBugpyneaprzynajmniejraz_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_Se'] !== null ? autolinker.link(feature.properties['FID_Bug_Se'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['gridcode'] !== null ? autolinker.link(feature.properties['gridcode'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['InPoly_FID'] !== null ? autolinker.link(feature.properties['InPoly_FID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_19'] !== null ? autolinker.link(feature.properties['FID_Bug_19'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id_1'] !== null ? autolinker.link(feature.properties['Id_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_1'] !== null ? autolinker.link(feature.properties['Shape_Le_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_VM'] !== null ? autolinker.link(feature.properties['FID_Bug_VM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUG_BRZEG'] !== null ? autolinker.link(feature.properties['DLUG_BRZEG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUGOSC'] !== null ? autolinker.link(feature.properties['DLUGOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOKLADNOSC'] !== null ? autolinker.link(feature.properties['DOKLADNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOSTEPNOSC'] !== null ? autolinker.link(feature.properties['DOSTEPNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GLEBOKOSC'] !== null ? autolinker.link(feature.properties['GLEBOKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ISTNIENIE'] !== null ? autolinker.link(feature.properties['ISTNIENIE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_HYDRO'] !== null ? autolinker.link(feature.properties['KAT_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_PLYWU'] !== null ? autolinker.link(feature.properties['KAT_PLYWU'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POJEMN'] !== null ? autolinker.link(feature.properties['KAT_POJEMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POLOZ'] !== null ? autolinker.link(feature.properties['KAT_POLOZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_WODY'] !== null ? autolinker.link(feature.properties['KAT_WODY'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAJW_WYS'] !== null ? autolinker.link(feature.properties['NAJW_WYS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAZWA'] !== null ? autolinker.link(feature.properties['NAZWA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBIEKT'] !== null ? autolinker.link(feature.properties['OBIEKT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_UPUST'] !== null ? autolinker.link(feature.properties['OPR_UPUST'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_ZBURZ'] !== null ? autolinker.link(feature.properties['OPR_ZBURZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POCH_HYDRO'] !== null ? autolinker.link(feature.properties['POCH_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PRED_PRZEP'] !== null ? autolinker.link(feature.properties['PRED_PRZEP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SREDNIA_GL'] !== null ? autolinker.link(feature.properties['SREDNIA_GL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STAT_EKSPL'] !== null ? autolinker.link(feature.properties['STAT_EKSPL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SZEROKOSC'] !== null ? autolinker.link(feature.properties['SZEROKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAJNOSC'] !== null ? autolinker.link(feature.properties['TAJNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_AKWED'] !== null ? autolinker.link(feature.properties['TYP_AKWED'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_WYBRZ'] !== null ? autolinker.link(feature.properties['TYP_WYBRZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZN_ORIENT'] !== null ? autolinker.link(feature.properties['ZN_ORIENT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POWIERZCHN'] !== null ? autolinker.link(feature.properties['POWIERZCHN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID_12'] !== null ? autolinker.link(feature.properties['ID_12'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_2'] !== null ? autolinker.link(feature.properties['Shape_Le_2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_obszarwktrymrzekaBugpyneaprzynajmniejraz_1_0() {
+            return {
+                pane: 'pane_obszarwktrymrzekaBugpyneaprzynajmniejraz_1',
+                opacity: 1,
+                color: 'rgba(29,110,209,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(29,110,209,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_obszarwktrymrzekaBugpyneaprzynajmniejraz_1');
+        map.getPane('pane_obszarwktrymrzekaBugpyneaprzynajmniejraz_1').style.zIndex = 401;
+        map.getPane('pane_obszarwktrymrzekaBugpyneaprzynajmniejraz_1').style['mix-blend-mode'] = 'normal';
+        var layer_obszarwktrymrzekaBugpyneaprzynajmniejraz_1 = new L.geoJson(json_obszarwktrymrzekaBugpyneaprzynajmniejraz_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_obszarwktrymrzekaBugpyneaprzynajmniejraz_1',
+            layerName: 'layer_obszarwktrymrzekaBugpyneaprzynajmniejraz_1',
+            pane: 'pane_obszarwktrymrzekaBugpyneaprzynajmniejraz_1',
+            onEachFeature: pop_obszarwktrymrzekaBugpyneaprzynajmniejraz_1,
+            style: style_obszarwktrymrzekaBugpyneaprzynajmniejraz_1_0,
+        });
+        bounds_group.addLayer(layer_obszarwktrymrzekaBugpyneaprzynajmniejraz_1);
+        map.addLayer(layer_obszarwktrymrzekaBugpyneaprzynajmniejraz_1);
+        function pop_obszarwktrymrzekapyneazawsze_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_Se'] !== null ? autolinker.link(feature.properties['FID_Bug_Se'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['gridcode'] !== null ? autolinker.link(feature.properties['gridcode'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['InPoly_FID'] !== null ? autolinker.link(feature.properties['InPoly_FID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_VM'] !== null ? autolinker.link(feature.properties['FID_Bug_VM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUG_BRZEG'] !== null ? autolinker.link(feature.properties['DLUG_BRZEG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUGOSC'] !== null ? autolinker.link(feature.properties['DLUGOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOKLADNOSC'] !== null ? autolinker.link(feature.properties['DOKLADNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOSTEPNOSC'] !== null ? autolinker.link(feature.properties['DOSTEPNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GLEBOKOSC'] !== null ? autolinker.link(feature.properties['GLEBOKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ISTNIENIE'] !== null ? autolinker.link(feature.properties['ISTNIENIE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_HYDRO'] !== null ? autolinker.link(feature.properties['KAT_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_PLYWU'] !== null ? autolinker.link(feature.properties['KAT_PLYWU'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POJEMN'] !== null ? autolinker.link(feature.properties['KAT_POJEMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POLOZ'] !== null ? autolinker.link(feature.properties['KAT_POLOZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_WODY'] !== null ? autolinker.link(feature.properties['KAT_WODY'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAJW_WYS'] !== null ? autolinker.link(feature.properties['NAJW_WYS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAZWA'] !== null ? autolinker.link(feature.properties['NAZWA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBIEKT'] !== null ? autolinker.link(feature.properties['OBIEKT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_UPUST'] !== null ? autolinker.link(feature.properties['OPR_UPUST'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_ZBURZ'] !== null ? autolinker.link(feature.properties['OPR_ZBURZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POCH_HYDRO'] !== null ? autolinker.link(feature.properties['POCH_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PRED_PRZEP'] !== null ? autolinker.link(feature.properties['PRED_PRZEP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SREDNIA_GL'] !== null ? autolinker.link(feature.properties['SREDNIA_GL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STAT_EKSPL'] !== null ? autolinker.link(feature.properties['STAT_EKSPL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SZEROKOSC'] !== null ? autolinker.link(feature.properties['SZEROKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAJNOSC'] !== null ? autolinker.link(feature.properties['TAJNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_AKWED'] !== null ? autolinker.link(feature.properties['TYP_AKWED'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_WYBRZ'] !== null ? autolinker.link(feature.properties['TYP_WYBRZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZN_ORIENT'] !== null ? autolinker.link(feature.properties['ZN_ORIENT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POWIERZCHN'] !== null ? autolinker.link(feature.properties['POWIERZCHN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID_1'] !== null ? autolinker.link(feature.properties['ID_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['FID_Bug_19'] !== null ? autolinker.link(feature.properties['FID_Bug_19'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id_12'] !== null ? autolinker.link(feature.properties['Id_12'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_1'] !== null ? autolinker.link(feature.properties['Shape_Le_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_2'] !== null ? autolinker.link(feature.properties['Shape_Le_2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_obszarwktrymrzekapyneazawsze_2_0() {
+            return {
+                pane: 'pane_obszarwktrymrzekapyneazawsze_2',
+                opacity: 1,
+                color: 'rgba(98,147,252,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(139,175,253,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_obszarwktrymrzekapyneazawsze_2');
+        map.getPane('pane_obszarwktrymrzekapyneazawsze_2').style.zIndex = 402;
+        map.getPane('pane_obszarwktrymrzekapyneazawsze_2').style['mix-blend-mode'] = 'normal';
+        var layer_obszarwktrymrzekapyneazawsze_2 = new L.geoJson(json_obszarwktrymrzekapyneazawsze_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_obszarwktrymrzekapyneazawsze_2',
+            layerName: 'layer_obszarwktrymrzekapyneazawsze_2',
+            pane: 'pane_obszarwktrymrzekapyneazawsze_2',
+            onEachFeature: pop_obszarwktrymrzekapyneazawsze_2,
+            style: style_obszarwktrymrzekapyneazawsze_2_0,
+        });
+        bounds_group.addLayer(layer_obszarwktrymrzekapyneazawsze_2);
+        map.addLayer(layer_obszarwktrymrzekapyneazawsze_2);
+        function pop_przebiegrzekiBugw1940roku_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Le_1'] !== null ? autolinker.link(feature.properties['Shape_Le_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_przebiegrzekiBugw1940roku_3_0() {
+            return {
+                pane: 'pane_przebiegrzekiBugw1940roku_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,77,160,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_przebiegrzekiBugw1940roku_3');
+        map.getPane('pane_przebiegrzekiBugw1940roku_3').style.zIndex = 403;
+        map.getPane('pane_przebiegrzekiBugw1940roku_3').style['mix-blend-mode'] = 'normal';
+        var layer_przebiegrzekiBugw1940roku_3 = new L.geoJson(json_przebiegrzekiBugw1940roku_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_przebiegrzekiBugw1940roku_3',
+            layerName: 'layer_przebiegrzekiBugw1940roku_3',
+            pane: 'pane_przebiegrzekiBugw1940roku_3',
+            onEachFeature: pop_przebiegrzekiBugw1940roku_3,
+            style: style_przebiegrzekiBugw1940roku_3_0,
+        });
+        bounds_group.addLayer(layer_przebiegrzekiBugw1940roku_3);
+        map.addLayer(layer_przebiegrzekiBugw1940roku_3);
+        function pop_przebiegrzekiBugw1990roku_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUG_BRZEG'] !== null ? autolinker.link(feature.properties['DLUG_BRZEG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DLUGOSC'] !== null ? autolinker.link(feature.properties['DLUGOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOKLADNOSC'] !== null ? autolinker.link(feature.properties['DOKLADNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DOSTEPNOSC'] !== null ? autolinker.link(feature.properties['DOSTEPNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GLEBOKOSC'] !== null ? autolinker.link(feature.properties['GLEBOKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ISTNIENIE'] !== null ? autolinker.link(feature.properties['ISTNIENIE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_HYDRO'] !== null ? autolinker.link(feature.properties['KAT_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_PLYWU'] !== null ? autolinker.link(feature.properties['KAT_PLYWU'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POJEMN'] !== null ? autolinker.link(feature.properties['KAT_POJEMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_POLOZ'] !== null ? autolinker.link(feature.properties['KAT_POLOZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KAT_WODY'] !== null ? autolinker.link(feature.properties['KAT_WODY'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAJW_WYS'] !== null ? autolinker.link(feature.properties['NAJW_WYS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAZWA'] !== null ? autolinker.link(feature.properties['NAZWA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBIEKT'] !== null ? autolinker.link(feature.properties['OBIEKT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_UPUST'] !== null ? autolinker.link(feature.properties['OPR_UPUST'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OPR_ZBURZ'] !== null ? autolinker.link(feature.properties['OPR_ZBURZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POCH_HYDRO'] !== null ? autolinker.link(feature.properties['POCH_HYDRO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PRED_PRZEP'] !== null ? autolinker.link(feature.properties['PRED_PRZEP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SREDNIA_GL'] !== null ? autolinker.link(feature.properties['SREDNIA_GL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STAT_EKSPL'] !== null ? autolinker.link(feature.properties['STAT_EKSPL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SZEROKOSC'] !== null ? autolinker.link(feature.properties['SZEROKOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAJNOSC'] !== null ? autolinker.link(feature.properties['TAJNOSC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_AKWED'] !== null ? autolinker.link(feature.properties['TYP_AKWED'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TYP_WYBRZ'] !== null ? autolinker.link(feature.properties['TYP_WYBRZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ZN_ORIENT'] !== null ? autolinker.link(feature.properties['ZN_ORIENT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['POWIERZCHN'] !== null ? autolinker.link(feature.properties['POWIERZCHN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID'] !== null ? autolinker.link(feature.properties['ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_przebiegrzekiBugw1990roku_4_0() {
+            return {
+                pane: 'pane_przebiegrzekiBugw1990roku_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(97,148,244,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_przebiegrzekiBugw1990roku_4');
+        map.getPane('pane_przebiegrzekiBugw1990roku_4').style.zIndex = 404;
+        map.getPane('pane_przebiegrzekiBugw1990roku_4').style['mix-blend-mode'] = 'normal';
+        var layer_przebiegrzekiBugw1990roku_4 = new L.geoJson(json_przebiegrzekiBugw1990roku_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_przebiegrzekiBugw1990roku_4',
+            layerName: 'layer_przebiegrzekiBugw1990roku_4',
+            pane: 'pane_przebiegrzekiBugw1990roku_4',
+            onEachFeature: pop_przebiegrzekiBugw1990roku_4,
+            style: style_przebiegrzekiBugw1990roku_4_0,
+        });
+        bounds_group.addLayer(layer_przebiegrzekiBugw1990roku_4);
+        map.addLayer(layer_przebiegrzekiBugw1990roku_4);
+        function pop_przebiegrzekiBugw2024roku_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['gridcode'] !== null ? autolinker.link(feature.properties['gridcode'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['InPoly_FID'] !== null ? autolinker.link(feature.properties['InPoly_FID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_przebiegrzekiBugw2024roku_5_0() {
+            return {
+                pane: 'pane_przebiegrzekiBugw2024roku_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(173,209,255,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_przebiegrzekiBugw2024roku_5');
+        map.getPane('pane_przebiegrzekiBugw2024roku_5').style.zIndex = 405;
+        map.getPane('pane_przebiegrzekiBugw2024roku_5').style['mix-blend-mode'] = 'normal';
+        var layer_przebiegrzekiBugw2024roku_5 = new L.geoJson(json_przebiegrzekiBugw2024roku_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_przebiegrzekiBugw2024roku_5',
+            layerName: 'layer_przebiegrzekiBugw2024roku_5',
+            pane: 'pane_przebiegrzekiBugw2024roku_5',
+            onEachFeature: pop_przebiegrzekiBugw2024roku_5,
+            style: style_przebiegrzekiBugw2024roku_5_0,
+        });
+        bounds_group.addLayer(layer_przebiegrzekiBugw2024roku_5);
+        map.addLayer(layer_przebiegrzekiBugw2024roku_5);
+        function pop_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GRID_ID'] !== null ? autolinker.link(feature.properties['GRID_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Sentinel_2'] !== null ? autolinker.link(feature.properties['Sentinel_2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['VMap_1990'] !== null ? autolinker.link(feature.properties['VMap_1990'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Histo_1940'] !== null ? autolinker.link(feature.properties['Histo_1940'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_senti'] !== null ? autolinker.link(feature.properties['AREA_senti'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_VMap'] !== null ? autolinker.link(feature.properties['AREA_VMap'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_histo'] !== null ? autolinker.link(feature.properties['AREA_histo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['VMap_histo'] !== null ? autolinker.link(feature.properties['VMap_histo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Senti_VMap'] !== null ? autolinker.link(feature.properties['Senti_VMap'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_0(feature) {
+            if (feature.properties['VMap_histo'] >= -100.000000 && feature.properties['VMap_histo'] <= -60.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,82,52,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['VMap_histo'] >= -60.000000 && feature.properties['VMap_histo'] <= -20.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,182,57,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['VMap_histo'] >= -20.000000 && feature.properties['VMap_histo'] <= 0.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,234,71,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['VMap_histo'] >= 0.000000 && feature.properties['VMap_histo'] <= 20.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(177,219,255,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['VMap_histo'] >= 20.000000 && feature.properties['VMap_histo'] <= 60.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,155,255,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['VMap_histo'] >= 60.000000 && feature.properties['VMap_histo'] <= 100.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(61,110,196,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6');
+        map.getPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6').style.zIndex = 406;
+        map.getPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6').style['mix-blend-mode'] = 'normal';
+        var layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6 = new L.geoJson(json_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+            layerName: 'layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+            pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6',
+            onEachFeature: pop_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6,
+            style: style_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_0,
+        });
+        bounds_group.addLayer(layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6);
+        map.addLayer(layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6);
+        function pop_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GRID_ID'] !== null ? autolinker.link(feature.properties['GRID_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Sentinel_2'] !== null ? autolinker.link(feature.properties['Sentinel_2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['VMap_1990'] !== null ? autolinker.link(feature.properties['VMap_1990'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Histo_1940'] !== null ? autolinker.link(feature.properties['Histo_1940'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_senti'] !== null ? autolinker.link(feature.properties['AREA_senti'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_VMap'] !== null ? autolinker.link(feature.properties['AREA_VMap'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA_histo'] !== null ? autolinker.link(feature.properties['AREA_histo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['VMap_histo'] !== null ? autolinker.link(feature.properties['VMap_histo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Senti_VMap'] !== null ? autolinker.link(feature.properties['Senti_VMap'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_0(feature) {
+            if (feature.properties['Senti_VMap'] >= -100.000000 && feature.properties['Senti_VMap'] <= -60.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(207,58,58,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Senti_VMap'] >= -60.000000 && feature.properties['Senti_VMap'] <= -20.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,184,77,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Senti_VMap'] >= -20.000000 && feature.properties['Senti_VMap'] <= 0.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,233,105,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Senti_VMap'] >= 0.000000 && feature.properties['Senti_VMap'] <= 20.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,228,255,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Senti_VMap'] >= 20.000000 && feature.properties['Senti_VMap'] <= 60.000000 ) {
+                return {
+                pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(99,180,255,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7');
+        map.getPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7').style.zIndex = 407;
+        map.getPane('pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7').style['mix-blend-mode'] = 'normal';
+        var layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7 = new L.geoJson(json_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+            layerName: 'layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+            pane: 'pane_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7',
+            onEachFeature: pop_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7,
+            style: style_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_0,
+        });
+        bounds_group.addLayer(layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7);
+        map.addLayer(layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var overlaysTree = [
+            {label: 'różnica procentowego pokrycia rzeki w siatce heksagonów (Sentinel - VMap)<br /><table><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_100600.png" /></td><td>-100 - -60</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_60201.png" /></td><td>-60 - -20</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_2002.png" /></td><td>-20 - 0</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_0203.png" /></td><td>0 - 20</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7_20604.png" /></td><td>20 - 60</td></tr></table>', layer: layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwSentinelVMap_7},
+            {label: 'różnica procentowego pokrycia rzeki w siatce heksagonów (VMap - mapa historyczna)<br /><table><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_00000.png" /></td><td>0.0 - 0.0</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_60201.png" /></td><td>-60 - -20</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_2002.png" /></td><td>-20 - 0</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_0203.png" /></td><td>0 - 20</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_20604.png" /></td><td>20 - 60</td></tr><tr><td style="text-align: center;"><img src="legend/rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6_601005.png" /></td><td>60 - 100</td></tr></table>', layer: layer_rnicaprocentowegopokryciarzekiwsiatceheksagonwVMapmapahistoryczna_6},
+            {label: '<img src="legend/przebiegrzekiBugw2024roku_5.png" /> przebieg rzeki Bug w 2024 roku', layer: layer_przebiegrzekiBugw2024roku_5},
+            {label: '<img src="legend/przebiegrzekiBugw1990roku_4.png" /> przebieg rzeki Bug w 1990 roku', layer: layer_przebiegrzekiBugw1990roku_4},
+            {label: '<img src="legend/przebiegrzekiBugw1940roku_3.png" /> przebieg rzeki Bug w 1940 roku', layer: layer_przebiegrzekiBugw1940roku_3},
+            {label: '<img src="legend/obszarwktrymrzekapyneazawsze_2.png" /> obszar, w którym rzeka płyneła zawsze', layer: layer_obszarwktrymrzekapyneazawsze_2},
+            {label: '<img src="legend/obszarwktrymrzekaBugpyneaprzynajmniejraz_1.png" /> obszar, w którym rzeka Bug płyneła przynajmniej raz', layer: layer_obszarwktrymrzekaBugpyneaprzynajmniejraz_1},
+            {label: "Ortofotomapa", layer: layer_Ortofotomapa_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
